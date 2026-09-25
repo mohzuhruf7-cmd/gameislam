@@ -3,378 +3,782 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Game Edukasi Islam & Matematika</title>
+  <title>Game Edukasi Agama Islam SD (Solo & 1 vs 1)</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <style>
-    :root {
-      --primary: #2E7D32;
-      --primary-dark: #1B5E20;
-      --accent: #FFC107;
-      --bg: #F4F6F8;
-    }
-
+    @import url('https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600;700&family=Quicksand:wght@500;700&display=swap');
+    
     body {
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      background-color: var(--bg);
-      margin: 0;
-      padding: 20px;
-      display: flex;
-      justify-content: center;
-      align-items: center;
+      font-family: 'Quicksand', sans-serif;
+      background: linear-gradient(135deg, #0F5132 0%, #198754 50%, #20c997 100%);
       min-height: 100vh;
+      color: #212529;
     }
 
-    .container {
-      background: white;
-      padding: 30px;
-      border-radius: 16px;
-      box-shadow: 0 10px 30px rgba(0,0,0,0.1);
-      width: 100%;
-      max-width: 500px;
-      text-align: center;
+    .font-fredoka {
+      font-family: 'Fredoka', cursive, sans-serif;
     }
 
-    .user-card {
-      background: #E8F5E9;
-      padding: 10px 15px;
-      border-radius: 8px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 20px;
-      font-size: 14px;
-      color: var(--primary-dark);
-      font-weight: bold;
+    .islamic-bg-pattern {
+      background-color: #0d47a1;
+      background-image: radial-gradient(#20c997 1.5px, transparent 1.5px), radial-gradient(#198754 1.5px, #0f5132 1.5px);
+      background-size: 60px 60px;
+      background-position: 0 0, 30px 30px;
     }
 
-    .user-card button {
-      background: #e74c3c;
-      color: white;
-      border: none;
-      padding: 5px 10px;
-      border-radius: 4px;
-      cursor: pointer;
-      font-size: 12px;
+    .glass-card {
+      background: rgba(255, 255, 255, 0.95);
+      backdrop-filter: blur(12px);
+      border: 2px solid rgba(255, 255, 255, 0.6);
+      box-shadow: 0 20px 40px rgba(0,0,0,0.25);
     }
 
-    .question-box {
-      font-size: 28px;
-      font-weight: bold;
-      color: #333;
-      margin: 20px 0;
-      background: #F9F9F9;
-      padding: 20px;
-      border-radius: 12px;
-      border: 2px dashed #DDD;
+    .btn-3d {
+      transition: all 0.15s ease;
+      box-shadow: 0 6px 0 rgba(0,0,0,0.2);
+    }
+    .btn-3d:active {
+      transform: translateY(4px);
+      box-shadow: 0 2px 0 rgba(0,0,0,0.2);
     }
 
-    .options-grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 12px;
-      margin-top: 20px;
-    }
+    /* Split Screen 1vs1 styles */
+    .p1-color { background-color: #3b82f6; color: white; }
+    .p2-color { background-color: #ef4444; color: white; }
 
-    .btn-option {
-      background: var(--primary);
-      color: white;
-      border: none;
-      padding: 15px;
-      font-size: 18px;
-      font-weight: bold;
-      border-radius: 8px;
-      cursor: pointer;
-      transition: transform 0.1s, background 0.2s;
+    @keyframes pulse-shake {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.05) rotate(1deg); }
     }
-
-    .btn-option:hover {
-      background: var(--primary-dark);
-      transform: translateY(-2px);
-    }
-
-    .score-board {
-      font-size: 18px;
-      font-weight: bold;
-      color: #555;
-      margin-bottom: 10px;
-    }
-
-    /* Modal Overlay Login */
-    .modal-overlay {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background: rgba(0,0,0,0.7);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      z-index: 9999;
-    }
-
-    .modal-content {
-      background: white;
-      padding: 30px;
-      border-radius: 16px;
-      width: 90%;
-      max-width: 400px;
-      text-align: center;
-      box-shadow: 0 10px 25px rgba(0,0,0,0.2);
-    }
-
-    .form-group {
-      margin-bottom: 15px;
-      text-align: left;
-    }
-
-    .form-group label {
-      display: block;
-      font-weight: bold;
-      margin-bottom: 5px;
-      font-size: 14px;
-      color: #333;
-    }
-
-    .form-group input {
-      width: 100%;
-      padding: 12px;
-      border: 1px solid #CCC;
-      border-radius: 8px;
-      box-sizing: border-box;
-      font-size: 14px;
-    }
-
-    .btn-submit {
-      width: 100%;
-      padding: 12px;
-      background: var(--primary);
-      color: white;
-      border: none;
-      border-radius: 8px;
-      font-weight: bold;
-      font-size: 16px;
-      cursor: pointer;
-      margin-top: 10px;
-    }
-
-    .btn-submit:hover {
-      background: var(--primary-dark);
-    }
-
-    .status-msg {
-      margin-top: 15px;
-      font-size: 14px;
-      color: #2E7D32;
-      font-weight: bold;
+    .animate-pulse-shake {
+      animation: pulse-shake 0.4s ease-in-out;
     }
   </style>
 </head>
-<body>
+<body class="islamic-bg-pattern flex flex-col justify-between min-h-screen text-slate-800 antialiased selection:bg-emerald-500 selection:text-white">
 
-  <!-- MODAL LOGIN -->
-  <div id="modal-login" class="modal-overlay">
-    <div class="modal-content">
-      <h2 style="margin-top:0; color:var(--primary);">Selamat Datang! 👋</h2>
-      <p style="color:#666; font-size:14px;">Masukkan data diri sebelum bermain agar skor Anda tercatat di Google Drive.</p>
-      
-      <div class="form-group">
-        <label>Nama Lengkap:</label>
-        <input type="text" id="input-nama" placeholder="Contoh: Ahmad Subagja">
+  <!-- Top Navigation / Header -->
+  <header class="w-full bg-emerald-900/90 border-b-4 border-amber-400 p-4 shadow-lg text-white backdrop-blur-md sticky top-0 z-40">
+    <div class="max-w-6xl mx-auto flex flex-wrap justify-between items-center gap-4">
+      <div class="flex items-center space-x-3">
+        <div class="bg-amber-400 text-emerald-900 p-3 rounded-2xl shadow-md font-bold text-2xl">
+          <i class="fa-solid font-bold fa-mosque"></i>
+        </div>
+        <div>
+          <h1 class="font-fredoka text-xl md:text-2xl font-bold tracking-wide text-amber-300">Kuis Pintar Agama Islam SD</h1>
+          <p class="text-xs text-emerald-200">100% Edukasi PAI SD Kelas 1 - 6</p>
+        </div>
       </div>
-      
-      <div class="form-group">
-        <label>Kelas / Sekolah:</label>
-        <input type="text" id="input-kelas" placeholder="Contoh: 4B - SDN 01">
-      </div>
-      
-      <button class="btn-submit" onclick="simpanProfilPemain()">Mulai Bermain 🚀</button>
-    </div>
-  </div>
 
-  <!-- CONTAINER GAME -->
-  <div class="container">
-    <div class="user-card">
-      <span id="display-user">Pemain: -</span>
-      <button onclick="gantiPemain()">Ganti Akun</button>
-    </div>
-
-    <div class="score-board">
-      Skor Saat Ini: <span id="score-text" style="color:var(--primary);">0</span>
-    </div>
-
-    <div id="game-area">
-      <div class="question-box" id="question-text">Soal akan muncul di sini</div>
-      
-      <div class="options-grid" id="options-container">
-        <!-- Pilihan jawaban di-generate lewat JS -->
+      <!-- User Info Bar -->
+      <div id="user-info-bar" class="hidden flex items-center bg-emerald-800/80 px-4 py-2 rounded-xl border border-emerald-600">
+        <i class="fa-solid fa-user-graduate text-amber-400 text-lg mr-3"></i>
+        <div class="text-left">
+          <p id="nav-user-name" class="font-bold text-sm text-white">Siswa</p>
+          <p id="nav-user-class" class="text-xs text-emerald-200">Kelas -</p>
+        </div>
+        <button onclick="logoutUser()" class="ml-4 bg-red-500 hover:bg-red-600 text-white p-2 rounded-lg text-xs font-bold transition" title="Ganti Akun">
+          <i class="fa-solid fa-right-from-bracket"></i>
+        </button>
       </div>
     </div>
+  </header>
 
-    <div id="status-msg" class="status-msg"></div>
-  </div>
+  <!-- Main View Container -->
+  <main class="flex-grow flex items-center justify-center p-4">
+
+    <!-- 1. LOGIN MODAL OVERLAY -->
+    <div id="login-modal" class="fixed inset-0 bg-black/75 backdrop-blur-md flex items-center justify-center p-4 z-50">
+      <div class="glass-card rounded-3xl p-6 md:p-8 w-full max-w-md text-center border-4 border-amber-400 animate-pulse-shake">
+        <div class="w-20 h-20 bg-emerald-100 text-emerald-700 rounded-full flex items-center justify-center mx-auto mb-4 border-4 border-emerald-500 shadow-inner">
+          <i class="fa-solid fa-user-gear text-4xl"></i>
+        </div>
+        <h2 class="font-fredoka text-2xl md:text-3xl font-bold text-emerald-800 mb-2">Login Peserta Game</h2>
+        <p class="text-xs md:text-sm text-slate-600 mb-6">Isi data dirimu sebelum mulai bermain agar skor kuis tersimpan di database guru!</p>
+
+        <form id="form-login" onsubmit="handleLogin(event)" class="space-y-4 text-left">
+          <div>
+            <label class="block text-sm font-bold text-slate-700 mb-1"><i class="fa-solid fa-signature mr-2 text-emerald-600"></i>Nama Lengkap:</label>
+            <input type="text" id="input-nama" required placeholder="Contoh: Ahmad Subagja" class="w-full px-4 py-3 rounded-xl border-2 border-slate-300 focus:border-emerald-500 focus:ring-2 focus:ring-emerald-200 outline-none font-bold text-slate-800 transition">
+          </div>
+
+          <div>
+            <label class="block text-sm font-bold text-slate-700 mb-1"><i class="fa-solid fa-school mr-2 text-emerald-600"></i>Kelas & Sekolah:</label>
+            <input type="text" id="input-kelas" required placeholder="Contoh: 4B - SDN 01 Jakarta" class="w-full px-4 py-3 rounded-xl border-2 border-slate-300 focus:border-emerald-500 focus:ring-2 focus:ring-emerald-200 outline-none font-bold text-slate-800 transition">
+          </div>
+
+          <button type="submit" class="w-full btn-3d bg-amber-400 hover:bg-amber-300 text-emerald-950 font-fredoka text-lg font-bold py-3 px-6 rounded-xl border-b-4 border-amber-600 transition flex items-center justify-center gap-2">
+            <span>Masuk & Bermain</span>
+            <i class="fa-solid fa-play"></i>
+          </button>
+        </form>
+      </div>
+    </div>
+
+    <!-- 2. MAIN MENU VIEW -->
+    <div id="view-menu" class="glass-card rounded-3xl p-6 md:p-10 w-full max-w-2xl text-center hidden space-y-6">
+      <div class="space-y-2">
+        <span class="bg-amber-100 text-amber-800 text-xs font-bold px-3 py-1 rounded-full uppercase tracking-wider border border-amber-300">Pendidikan Agama Islam SD</span>
+        <h2 class="font-fredoka text-3xl md:text-4xl font-bold text-emerald-900">Pilih Mode Permainan</h2>
+        <p class="text-sm text-slate-600">Uji pengetahuan keislamanmu secara mandiri atau bertanding dengan teman!</p>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4 pt-4">
+        <!-- Solo Mode Button -->
+        <button onclick="startSoloMode()" class="btn-3d bg-emerald-600 hover:bg-emerald-500 text-white p-6 rounded-2xl border-b-4 border-emerald-800 flex flex-col items-center justify-center space-y-3 group">
+          <div class="w-16 h-16 bg-white/20 rounded-2xl flex items-center justify-center text-3xl group-hover:scale-110 transition">
+            <i class="fa-solid fa-user-astronaut"></i>
+          </div>
+          <div class="text-center">
+            <h3 class="font-fredoka text-xl font-bold">Kuis Solo (Tingkat)</h3>
+            <p class="text-xs text-emerald-100 mt-1">Mainkan 10 Soal acak, kejar combo skor, dan kirim hasil ke Google Sheets!</p>
+          </div>
+        </button>
+
+        <!-- 1vs1 Battle Mode Button -->
+        <button onclick="startBattleMode()" class="btn-3d bg-sky-600 hover:bg-sky-500 text-white p-6 rounded-2xl border-b-4 border-sky-800 flex flex-col items-center justify-center space-y-3 group">
+          <div class="w-16 h-16 bg-white/20 rounded-2xl flex items-center justify-center text-3xl group-hover:scale-110 transition">
+            <i class="fa-solid fa-people-arrows"></i>
+          </div>
+          <div class="text-center">
+            <h3 class="font-fredoka text-xl font-bold">Tanding 1 vs 1</h3>
+            <p class="text-xs text-sky-100 mt-1">Ajak temanmu bertanding menjawab cepat di 1 HP / Laptop yang sama!</p>
+          </div>
+        </button>
+      </div>
+
+      <!-- Apps Script Status Box -->
+      <div class="bg-slate-100 p-4 rounded-xl text-xs text-slate-600 border border-slate-300 flex items-center justify-between">
+        <div class="flex items-center space-x-2">
+          <i class="fa-solid fa-cloud-arrow-up text-emerald-600 text-base"></i>
+          <span>Integrasi Google Sheets: <strong>Aktif</strong></span>
+        </div>
+        <button onclick="testGoogleSheetConnection()" class="text-emerald-700 font-bold hover:underline">Tes Sinkronisasi</button>
+      </div>
+    </div>
+
+    <!-- 3. SOLO QUIZ VIEW -->
+    <div id="view-solo" class="glass-card rounded-3xl p-6 md:p-8 w-full max-w-2xl hidden space-y-6">
+      <!-- Quiz Header -->
+      <div class="flex justify-between items-center bg-slate-100 p-4 rounded-2xl border border-slate-200">
+        <div>
+          <span class="text-xs text-slate-500 font-bold uppercase">Nomor Soal</span>
+          <p class="font-fredoka text-lg text-emerald-700"><span id="solo-num">1</span> / 10</p>
+        </div>
+        <div>
+          <span class="text-xs text-slate-500 font-bold uppercase">Sisa Waktu</span>
+          <p id="solo-timer" class="font-fredoka text-xl text-amber-600">20s</p>
+        </div>
+        <div>
+          <span class="text-xs text-slate-500 font-bold uppercase">Skor</span>
+          <p id="solo-score" class="font-fredoka text-xl text-emerald-600">0</p>
+        </div>
+      </div>
+
+      <!-- Streak / Combo Indicator -->
+      <div id="solo-combo-badge" class="hidden bg-gradient-to-r from-amber-400 to-orange-500 text-white font-fredoka text-center py-1 rounded-full text-xs font-bold animate-bounce shadow">
+        🔥 COMBO STREAK x<span id="solo-combo-count">2</span> (+5 Bonus Poin!)
+      </div>
+
+      <!-- Question Box -->
+      <div class="bg-emerald-50 border-2 border-emerald-200 p-6 rounded-2xl min-h-[120px] flex items-center justify-center text-center">
+        <h3 id="solo-question-text" class="font-fredoka text-xl md:text-2xl text-emerald-950">
+          Loading soal...
+        </h3>
+      </div>
+
+      <!-- Options Buttons -->
+      <div id="solo-options-grid" class="grid grid-cols-1 md:grid-cols-2 gap-3">
+        <!-- Generated dynamically via JS -->
+      </div>
+    </div>
+
+    <!-- 4. MULTIPLAYER 1 VS 1 VIEW -->
+    <div id="view-battle" class="w-full max-w-5xl hidden flex flex-col md:flex-row gap-4">
+      
+      <!-- PLAYER 1 SIDE (LEFT/BLUE) -->
+      <div class="flex-1 bg-gradient-to-b from-blue-600 to-blue-800 text-white p-5 rounded-3xl border-4 border-blue-300 shadow-xl flex flex-col justify-between">
+        <div>
+          <div class="flex justify-between items-center mb-3 bg-blue-900/40 p-3 rounded-xl">
+            <div>
+              <p class="text-xs text-blue-200">PEMAIN 1 (KIRI)</p>
+              <h3 class="font-fredoka text-lg text-amber-300" id="p1-name-tag">Pemain 1</h3>
+            </div>
+            <div class="text-right">
+              <p class="text-xs text-blue-200">SKOR P1</p>
+              <p class="font-fredoka text-2xl text-white" id="p1-score">0</p>
+            </div>
+          </div>
+          <div class="bg-white/10 backdrop-blur p-4 rounded-xl text-center mb-4 min-h-[100px] flex items-center justify-center">
+            <p id="p1-question" class="font-fredoka text-lg md:text-xl">Loading soal...</p>
+          </div>
+        </div>
+
+        <div class="space-y-2">
+          <p class="text-xs text-blue-200 text-center mb-1">Gunakan Tombol Keyboard <strong>(Q, W, E, R)</strong> atau Tap:</p>
+          <div id="p1-options" class="grid grid-cols-1 gap-2">
+            <!-- P1 Options Buttons -->
+          </div>
+        </div>
+      </div>
+
+      <!-- VS BORDER & TIMER -->
+      <div class="flex md:flex-col items-center justify-center bg-amber-400 text-emerald-950 font-fredoka p-3 rounded-2xl shadow-lg border-2 border-white text-center font-bold gap-2">
+        <span>ROUND <br class="hidden md:inline"><span id="battle-round-num">1</span>/5</span>
+        <div class="w-12 h-12 bg-white rounded-full flex items-center justify-center text-xl shadow-inner border-2 border-amber-500" id="battle-timer">
+          15
+        </div>
+        <span>VS</span>
+      </div>
+
+      <!-- PLAYER 2 SIDE (RIGHT/RED) -->
+      <div class="flex-1 bg-gradient-to-b from-red-600 to-red-800 text-white p-5 rounded-3xl border-4 border-red-300 shadow-xl flex flex-col justify-between">
+        <div>
+          <div class="flex justify-between items-center mb-3 bg-red-900/40 p-3 rounded-xl">
+            <div>
+              <p class="text-xs text-red-200">PEMAIN 2 (KANAN)</p>
+              <h3 class="font-fredoka text-lg text-amber-300">Teman / Lawan</h3>
+            </div>
+            <div class="text-right">
+              <p class="text-xs text-red-200">SKOR P2</p>
+              <p class="font-fredoka text-2xl text-white" id="p2-score">0</p>
+            </div>
+          </div>
+          <div class="bg-white/10 backdrop-blur p-4 rounded-xl text-center mb-4 min-h-[100px] flex items-center justify-center">
+            <p id="p2-question" class="font-fredoka text-lg md:text-xl">Loading soal...</p>
+          </div>
+        </div>
+
+        <div class="space-y-2">
+          <p class="text-xs text-red-200 text-center mb-1">Gunakan Tombol Keyboard <strong>(U, I, O, P)</strong> atau Tap:</p>
+          <div id="p2-options" class="grid grid-cols-1 gap-2">
+            <!-- P2 Options Buttons -->
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- 5. RESULT & CERTIFICATE VIEW -->
+    <div id="view-result" class="glass-card rounded-3xl p-6 md:p-8 w-full max-w-xl hidden text-center space-y-6">
+      <div id="result-header-icon" class="w-24 h-24 bg-amber-100 text-amber-500 rounded-full flex items-center justify-center mx-auto text-5xl shadow-md">
+        <i class="fa-solid fa-trophy"></i>
+      </div>
+
+      <div>
+        <h2 id="result-title" class="font-fredoka text-3xl font-bold text-emerald-900">Selamat! Kuis Selesai!</h2>
+        <p id="result-subtitle" class="text-sm text-slate-600 mt-1">Skor kamu telah berhasil dihitung!</p>
+      </div>
+
+      <div class="bg-emerald-50 p-6 rounded-2xl border border-emerald-200 space-y-3">
+        <p class="text-xs font-bold text-emerald-800 uppercase tracking-widest">Total Skor Akhir</p>
+        <p id="result-final-score" class="font-fredoka text-5xl font-bold text-emerald-600">0</p>
+        <p id="result-status-msg" class="text-xs text-slate-500 italic">⏳ Mengirim skor ke Google Drive...</p>
+      </div>
+
+      <!-- Action Buttons -->
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+        <button onclick="downloadCertificate()" class="btn-3d bg-amber-400 hover:bg-amber-300 text-emerald-950 font-bold py-3 px-4 rounded-xl border-b-4 border-amber-600 text-sm flex items-center justify-center gap-2">
+          <i class="fa-solid fa-file-certificate"></i>
+          <span>Download Sertifikat</span>
+        </button>
+        <button onclick="returnToMenu()" class="btn-3d bg-emerald-600 hover:bg-emerald-500 text-white font-bold py-3 px-4 rounded-xl border-b-4 border-emerald-800 text-sm flex items-center justify-center gap-2">
+          <i class="fa-solid fa-house"></i>
+          <span>Kembali ke Menu</span>
+        </button>
+      </div>
+    </div>
+
+  </main>
+
+  <!-- Footer -->
+  <footer class="w-full bg-emerald-950 text-emerald-300 text-center py-3 text-xs border-t border-emerald-800">
+    <p>© Game Agama Islam SD | Terintegrasi Google Apps Script & Drive</p>
+  </footer>
 
   <script>
-    // =============================================================
-    // 1. KONFIGURASI APPS SCRIPT
-    // TEMPELKAN URL WEB APP GOOGLE APPS SCRIPT ANDA DI BAWAH INI:
-    // =============================================================
+    /* =====================================================================
+       1. KONFIGURASI GOOGLE APPS SCRIPT
+       Ganti URL dibawah dengan URL Web App Apps Script Anda sendiri!
+       ===================================================================== */
     const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzgl0aTGshWzEKiCYjSpHZwamk-T9XWMwmKbNqDfQfHKfaAZQV2bbN76zJHPb-7XackOw/exec";
 
-    // Variables Game
-    let playerInfo = { nama: "", kelas: "" };
-    let currentScore = 0;
-    let currentQuestion = {};
-    let totalSoalDijawab = 0;
-    const MAX_SOAL = 5; // Game selesai & kirim skor setiap 5 soal
+    /* =====================================================================
+       2. BANK SOAL PAIS SD LENGKAP (KELAS 1 - KELAS 6) - 100% RELIGIUS
+       ===================================================================== */
+    const bankSoalPAI = [
+      // KELAS 1-2
+      { kelas: "1-2", q: "Rukun Islam yang pertama adalah...", options: ["Syahadat", "Shalat", "Zakat", "Puasa"], correct: 0 },
+      { kelas: "1-2", q: "Malaikat yang bertugas menyampaikan wahyu adalah...", options: ["Mikail", "Jibril", "Izrail", "Israfil"], correct: 1 },
+      { kelas: "1-2", q: "Jumlah Rukun Iman ada berapa...", options: ["5", "6", "4", "7"], correct: 1 },
+      { kelas: "1-2", q: "Nabi pertama yang diciptakan Allah SWT adalah...", options: ["Nabi Muhammad SAW", "Nabi Ibrahim AS", "Nabi Adam AS", "Nabi Musa AS"], correct: 2 },
+      { kelas: "1-2", q: "Sebelum makan kita membaca ucapan...", options: ["Alhamdulillah", "Bismillah", "Subhanallah", "Astaghfirullah"], correct: 1 },
+      { kelas: "1-2", q: "Kitab suci umat Islam adalah...", options: ["Injil", "Taurat", "Al-Qur'an", "Zabur"], correct: 2 },
 
-    // Bank Soal Contoh (Bisa disesuaikan/ditambah)
-    const bankSoal = [
-      { q: "Berapakah hasil dari 12 + 15?", options: [27, 25, 29, 30], correct: 27 },
-      { q: "Rukun Islam yang pertama adalah...", options: ["Syahadat", "Shalat", "Zakat", "Puasa"], correct: "Syahadat" },
-      { q: "Berapakah hasil dari 8 x 7?", options: [54, 56, 48, 64], correct: 56 },
-      { q: "Malaikat yang bertugas menyampaikan wahyu adalah...", options: ["Mikail", "Jibril", "Israfil", "Izrail"], correct: "Jibril" },
-      { q: "Berapakah hasil dari 50 - 18?", options: [32, 34, 28, 30], correct: 32 },
-      { q: "Kitab suci yang diturunkan kepada Nabi Muhammad SAW adalah...", options: ["Taurat", "Zabur", "Injil", "Al-Qur'an"], correct: "Al-Qur'an" }
+      // KELAS 3-4
+      { kelas: "3-4", q: "Jumlah rakaat shalat Subuh adalah...", options: ["2 Rakaat", "3 Rakaat", "4 Rakaat", "1 Rakaat"], correct: 0 },
+      { kelas: "3-4", q: "Nabi dan Rasul terakhir penutup para nabi adalah...", options: ["Nabi Isa AS", "Nabi Musa AS", "Nabi Muhammad SAW", "Nabi Ibrahim AS"], correct: 2 },
+      { kelas: "3-4", q: "Asmaul Husna 'Ar-Rahman' artinya Allah Maha...", options: ["Penyayang", "Pengasih", "Pemberi", "Mendengar"], correct: 1 },
+      { kelas: "3-4", q: "Puasa wajib dilaksanakan pada bulan...", options: ["Syawal", "Ramadhan", "Muharram", "Dzulhijjah"], correct: 1 },
+      { kelas: "3-4", q: "Kitab Zabur diturunkan kepada nabi...", options: ["Nabi Daud AS", "Nabi Isa AS", "Nabi Musa AS", "Nabi Muhammad SAW"], correct: 0 },
+      { kelas: "3-4", q: "Malaikat peniup sangkakala pada hari kiamat adalah...", options: ["Munkar", "Nakir", "Israfil", "Izrail"], correct: 2 },
+
+      // KELAS 5-6
+      { kelas: "5-6", q: "Hukum bacaan Nun mati (نْ) bertemu Ba (ب) adalah...", options: ["Izhhar", "Iqlab", "Ikhfa", "Idgham"], correct: 1 },
+      { kelas: "5-6", q: "Zakat yang wajib dikeluarkan untuk membersihkan diri di bulan Ramadhan adalah...", options: ["Zakat Mal", "Zakat Fitrah", "Zakat Emas", "Zakat Perniagaan"], correct: 1 },
+      { kelas: "5-6", q: "Peristiwa berhijrahnya Nabi Muhammad SAW dari Mekkah menuju...", options: ["Madinah", "Taif", "Yaman", "Mesir"], correct: 0 },
+      { kelas: "5-6", q: "Percaya kepada Hari Kiamat termasuk Rukun Iman yang ke-...", options: ["3", "4", "5", "6"], correct: 2 },
+      { kelas: "5-6", q: "Huruf Izhhar Halqi berjumlah...", options: ["6 Huruf", "15 Huruf", "4 Huruf", "2 Huruf"], correct: 0 },
+      { kelas: "5-6", q: "Gelar 'Al-Amin' bagi Nabi Muhammad SAW artinya...", options: ["Dapat Dipercaya", "Maha Cerdas", "Maha Pengasih", "Pemimpin Agung"], correct: 0 }
     ];
 
-    // Initialize Game & Cek Login
+    /* =====================================================================
+       3. GAME STATE MANAGEMENT
+       ===================================================================== */
+    let currentUser = { nama: "", kelas: "" };
+    
+    // Solo State
+    let soloQuestions = [];
+    let soloIndex = 0;
+    let soloScore = 0;
+    let soloTimer = null;
+    let soloTimeLeft = 20;
+    let soloStreak = 0;
+
+    // Battle 1vs1 State
+    let battleQuestions = [];
+    let battleRound = 0;
+    let p1Score = 0;
+    let p2Score = 0;
+    let battleTimer = null;
+    let battleTimeLeft = 15;
+
+    // Web Audio Sound Effects Synthesizer
+    const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    function playSound(type) {
+      if (!audioCtx) return;
+      const osc = audioCtx.createOscillator();
+      const gain = audioCtx.createGain();
+      osc.connect(gain);
+      gain.connect(audioCtx.destination);
+
+      if (type === "correct") {
+        osc.frequency.setValueAtTime(523.25, audioCtx.currentTime); // C5
+        osc.frequency.exponentialRampToValueAtTime(880, audioCtx.currentTime + 0.2); // A5
+        gain.gain.setValueAtTime(0.3, audioCtx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.3);
+        osc.start();
+        osc.stop(audioCtx.currentTime + 0.3);
+      } else if (type === "wrong") {
+        osc.type = "sawtooth";
+        osc.frequency.setValueAtTime(220, audioCtx.currentTime); // A3
+        osc.frequency.exponentialRampToValueAtTime(110, audioCtx.currentTime + 0.2); // A2
+        gain.gain.setValueAtTime(0.3, audioCtx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.3);
+        osc.start();
+        osc.stop(audioCtx.currentTime + 0.3);
+      } else if (type === "click") {
+        osc.frequency.setValueAtTime(400, audioCtx.currentTime);
+        gain.gain.setValueAtTime(0.1, audioCtx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.05);
+        osc.start();
+        osc.stop(audioCtx.currentTime + 0.05);
+      }
+    }
+
+    /* =====================================================================
+       4. AUTHENTICATION & LOGIN LOGIC
+       ===================================================================== */
     window.addEventListener("DOMContentLoaded", () => {
-      const savedNama = localStorage.getItem("game_player_nama");
-      const savedKelas = localStorage.getItem("game_player_kelas");
+      const savedNama = localStorage.getItem("pai_game_nama");
+      const savedKelas = localStorage.getItem("pai_game_kelas");
 
       if (savedNama && savedKelas) {
-        playerInfo.nama = savedNama;
-        playerInfo.kelas = savedKelas;
-        document.getElementById("modal-login").style.display = "none";
-        updateUserDisplay();
-        loadNextQuestion();
+        currentUser.nama = savedNama;
+        currentUser.kelas = savedKelas;
+        document.getElementById("login-modal").classList.add("hidden");
+        showUserInfoBar();
+        document.getElementById("view-menu").classList.remove("hidden");
       }
     });
 
-    // Simpan Profil Pemain dari Modal
-    function simpanProfilPemain() {
+    function handleLogin(e) {
+      e.preventDefault();
+      playSound("click");
       const nama = document.getElementById("input-nama").value.trim();
       const kelas = document.getElementById("input-kelas").value.trim();
 
-      if (!nama || !kelas) {
-        alert("Harap isi Nama dan Kelas terlebih dahulu!");
-        return;
-      }
+      if (!nama || !kelas) return;
 
-      playerInfo.nama = nama;
-      playerInfo.kelas = kelas;
+      currentUser.nama = nama;
+      currentUser.kelas = kelas;
 
-      localStorage.setItem("game_player_nama", nama);
-      localStorage.setItem("game_player_kelas", kelas);
+      localStorage.setItem("pai_game_nama", nama);
+      localStorage.setItem("pai_game_kelas", kelas);
 
-      document.getElementById("modal-login").style.display = "none";
-      updateUserDisplay();
-      loadNextQuestion();
+      document.getElementById("login-modal").classList.add("hidden");
+      showUserInfoBar();
+      document.getElementById("view-menu").classList.remove("hidden");
     }
 
-    // Update Tampilan Nama di Header
-    function updateUserDisplay() {
-      document.getElementById("display-user").innerText = `👤 ${playerInfo.nama} (${playerInfo.kelas})`;
+    function showUserInfoBar() {
+      document.getElementById("nav-user-name").innerText = currentUser.nama;
+      document.getElementById("nav-user-class").innerText = `Kelas: ${currentUser.kelas}`;
+      document.getElementById("user-info-bar").classList.remove("hidden");
     }
 
-    // Ganti Akun / Logout
-    function gantiPemain() {
-      localStorage.removeItem("game_player_nama");
-      localStorage.removeItem("game_player_kelas");
+    function logoutUser() {
+      playSound("click");
+      localStorage.removeItem("pai_game_nama");
+      localStorage.removeItem("pai_game_kelas");
       location.reload();
     }
 
-    // Tampilkan Soal Berikutnya
-    function loadNextQuestion() {
-      if (totalSoalDijawab >= MAX_SOAL) {
-        selesaiGame();
+    /* =====================================================================
+       5. SOLO QUIZ ENGINE
+       ===================================================================== */
+    function startSoloMode() {
+      playSound("click");
+      hideAllViews();
+      document.getElementById("view-solo").classList.remove("hidden");
+
+      // Shuffle bank soal
+      soloQuestions = [...bankSoalPAI].sort(() => 0.5 - Math.random()).slice(0, 10);
+      soloIndex = 0;
+      soloScore = 0;
+      soloStreak = 0;
+
+      renderSoloQuestion();
+    }
+
+    function renderSoloQuestion() {
+      clearInterval(soloTimer);
+      if (soloIndex >= soloQuestions.length) {
+        finishSoloGame();
         return;
       }
 
-      const randomIndex = Math.floor(Math.random() * bankSoal.length);
-      currentQuestion = bankSoal[randomIndex];
+      const qData = soloQuestions[soloIndex];
+      document.getElementById("solo-num").innerText = soloIndex + 1;
+      document.getElementById("solo-score").innerText = soloScore;
+      document.getElementById("solo-question-text").innerText = qData.q;
 
-      document.getElementById("question-text").innerText = currentQuestion.q;
-      const optionsContainer = document.getElementById("options-container");
-      optionsContainer.innerHTML = "";
+      // Render Options
+      const grid = document.getElementById("solo-options-grid");
+      grid.innerHTML = "";
 
-      currentQuestion.options.forEach(opt => {
+      qData.options.forEach((optText, idx) => {
         const btn = document.createElement("button");
-        btn.className = "btn-option";
-        btn.innerText = opt;
-        btn.onclick = () => checkAnswer(opt);
-        optionsContainer.appendChild(btn);
+        btn.className = "btn-3d bg-white hover:bg-emerald-100 text-slate-800 font-bold p-4 rounded-xl border-2 border-slate-200 text-left transition flex items-center justify-between";
+        btn.innerHTML = `
+          <span>${optText}</span>
+          <span class="w-7 h-7 rounded-full bg-emerald-100 text-emerald-800 text-xs flex items-center justify-center font-bold">${String.fromCharCode(65 + idx)}</span>
+        `;
+        btn.onclick = () => answerSolo(idx);
+        grid.appendChild(btn);
       });
+
+      // Timer
+      soloTimeLeft = 20;
+      document.getElementById("solo-timer").innerText = `${soloTimeLeft}s`;
+      soloTimer = setInterval(() => {
+        soloTimeLeft--;
+        document.getElementById("solo-timer").innerText = `${soloTimeLeft}s`;
+        if (soloTimeLeft <= 0) {
+          clearInterval(soloTimer);
+          playSound("wrong");
+          soloStreak = 0;
+          updateComboBadge();
+          soloIndex++;
+          renderSoloQuestion();
+        }
+      }, 1000);
     }
 
-    // Cek Jawaban Pemain
-    function checkAnswer(selectedOpt) {
-      totalSoalDijawab++;
-      if (selectedOpt === currentQuestion.correct) {
-        currentScore += 20;
-        document.getElementById("score-text").innerText = currentScore;
+    function answerSolo(selectedIdx) {
+      clearInterval(soloTimer);
+      const qData = soloQuestions[soloIndex];
+
+      if (selectedIdx === qData.correct) {
+        playSound("correct");
+        soloStreak++;
+        const bonus = soloStreak > 1 ? 5 : 0;
+        soloScore += 10 + bonus;
+      } else {
+        playSound("wrong");
+        soloStreak = 0;
       }
-      loadNextQuestion();
+
+      updateComboBadge();
+      soloIndex++;
+      renderSoloQuestion();
     }
 
-    // Game Selesai & Kirim Data ke Apps Script / Google Drive
-    function selesaiGame() {
-      document.getElementById("game-area").innerHTML = `
-        <h2>🎉 Game Selesai!</h2>
-        <p>Skor Akhir Anda: <strong style="font-size:24px; color:var(--primary);">${currentScore}</strong></p>
-        <button class="btn-submit" onclick="restartGame()">Main Lagi 🔄</button>
-      `;
-
-      kirimSkorKeGoogleDrive(currentScore);
+    function updateComboBadge() {
+      const badge = document.getElementById("solo-combo-badge");
+      if (soloStreak > 1) {
+        document.getElementById("solo-combo-count").innerText = soloStreak;
+        badge.classList.remove("hidden");
+      } else {
+        badge.classList.add("hidden");
+      }
     }
 
-    // Restart Game
-    function restartGame() {
-      currentScore = 0;
-      totalSoalDijawab = 0;
-      document.getElementById("score-text").innerText = "0";
-      document.getElementById("status-msg").innerText = "";
-      document.getElementById("game-area").innerHTML = `
-        <div class="question-box" id="question-text">Soal akan muncul di sini</div>
-        <div class="options-grid" id="options-container"></div>
-      `;
-      loadNextQuestion();
+    function finishSoloGame() {
+      hideAllViews();
+      document.getElementById("view-result").classList.remove("hidden");
+      document.getElementById("result-final-score").innerText = soloScore;
+      
+      confetti({ particleCount: 100, spread: 70, origin: { y: 0.6 } });
+      sendScoreToGoogleDrive(soloScore);
     }
 
-    // =============================================================
-    // FUNGSI PENGIRIMAN DATA KE GOOGLE APPS SCRIPT
-    // =============================================================
-    function kirimSkorKeGoogleDrive(skorAkhir) {
-      const statusDiv = document.getElementById("status-msg");
-      statusDiv.innerText = "⏳ Mengirim skor ke Google Drive...";
+    /* =====================================================================
+       6. MULTIPLAYER 1 VS 1 ENGINE
+       ===================================================================== */
+    function startBattleMode() {
+      playSound("click");
+      hideAllViews();
+      document.getElementById("view-battle").classList.remove("hidden");
 
-      if (APPS_SCRIPT_URL.includes("PASTE_URL_WEB_APP_ANDA_DI_SINI")) {
-        statusDiv.innerText = "⚠️ Harap masukkan URL Apps Script Anda di dalam kode HTML!";
+      document.getElementById("p1-name-tag").innerText = currentUser.nama || "Pemain 1";
+      battleQuestions = [...bankSoalPAI].sort(() => 0.5 - Math.random()).slice(0, 5);
+      battleRound = 0;
+      p1Score = 0;
+      p2Score = 0;
+
+      renderBattleRound();
+    }
+
+    function renderBattleRound() {
+      clearInterval(battleTimer);
+      if (battleRound >= battleQuestions.length) {
+        finishBattleGame();
+        return;
+      }
+
+      const qData = battleQuestions[battleRound];
+      document.getElementById("battle-round-num").innerText = battleRound + 1;
+      document.getElementById("p1-score").innerText = p1Score;
+      document.getElementById("p2-score").innerText = p2Score;
+
+      document.getElementById("p1-question").innerText = qData.q;
+      document.getElementById("p2-question").innerText = qData.q;
+
+      // Render P1 & P2 Options
+      const p1Grid = document.getElementById("p1-options");
+      const p2Grid = document.getElementById("p2-options");
+      p1Grid.innerHTML = "";
+      p2Grid.innerHTML = "";
+
+      const keysP1 = ["Q", "W", "E", "R"];
+      const keysP2 = ["U", "I", "O", "P"];
+
+      qData.options.forEach((opt, idx) => {
+        // P1 Button
+        const btn1 = document.createElement("button");
+        btn1.className = "btn-3d bg-white/20 hover:bg-white/30 text-white font-bold py-2 px-3 rounded-lg text-left text-sm flex justify-between items-center";
+        btn1.innerHTML = `<span>${opt}</span> <span class="bg-blue-900 px-2 py-0.5 rounded text-xs">${keysP1[idx]}</span>`;
+        btn1.onclick = () => answerBattle(1, idx);
+        p1Grid.appendChild(btn1);
+
+        // P2 Button
+        const btn2 = document.createElement("button");
+        btn2.className = "btn-3d bg-white/20 hover:bg-white/30 text-white font-bold py-2 px-3 rounded-lg text-left text-sm flex justify-between items-center";
+        btn2.innerHTML = `<span>${opt}</span> <span class="bg-red-900 px-2 py-0.5 rounded text-xs">${keysP2[idx]}</span>`;
+        btn2.onclick = () => answerBattle(2, idx);
+        p2Grid.appendChild(btn2);
+      });
+
+      // Timer
+      battleTimeLeft = 15;
+      document.getElementById("battle-timer").innerText = battleTimeLeft;
+      battleTimer = setInterval(() => {
+        battleTimeLeft--;
+        document.getElementById("battle-timer").innerText = battleTimeLeft;
+        if (battleTimeLeft <= 0) {
+          clearInterval(battleTimer);
+          battleRound++;
+          renderBattleRound();
+        }
+      }, 1000);
+    }
+
+    function answerBattle(player, selectedIdx) {
+      clearInterval(battleTimer);
+      const qData = battleQuestions[battleRound];
+
+      if (selectedIdx === qData.correct) {
+        playSound("correct");
+        if (player === 1) p1Score += 20;
+        else p2Score += 20;
+      } else {
+        playSound("wrong");
+      }
+
+      battleRound++;
+      renderBattleRound();
+    }
+
+    // Keyboard listener for 1vs1 Battle Mode
+    window.addEventListener("keydown", (e) => {
+      if (document.getElementById("view-battle").classList.contains("hidden")) return;
+
+      const key = e.key.toUpperCase();
+      const p1Keys = ["Q", "W", "E", "R"];
+      const p2Keys = ["U", "I", "O", "P"];
+
+      if (p1Keys.includes(key)) {
+        answerBattle(1, p1Keys.indexOf(key));
+      } else if (p2Keys.includes(key)) {
+        answerBattle(2, p2Keys.indexOf(key));
+      }
+    });
+
+    function finishBattleGame() {
+      hideAllViews();
+      document.getElementById("view-result").classList.remove("hidden");
+
+      const title = document.getElementById("result-title");
+      const scoreText = document.getElementById("result-final-score");
+
+      if (p1Score > p2Score) {
+        title.innerText = `🏆 ${currentUser.nama || 'Pemain 1'} Menang!`;
+      } else if (p2Score > p1Score) {
+        title.innerText = "🏆 Pemain 2 Menang!";
+      } else {
+        title.innerText = "🤝 Pertandingan Seri!";
+      }
+
+      scoreText.innerText = `P1: ${p1Score} vs P2: ${p2Score}`;
+      document.getElementById("result-status-msg").innerText = "Mode 1vs1 selesai (tidak dikirim ke Google Sheets).";
+      confetti({ particleCount: 150, spread: 90 });
+    }
+
+    /* =====================================================================
+       7. INTEGRASI GOOGLE APPS SCRIPT / GOOGLE DRIVE
+       ===================================================================== */
+    function sendScoreToGoogleDrive(skorAkhir) {
+      const msg = document.getElementById("result-status-msg");
+      msg.innerText = "⏳ Mengirim data ke Google Drive...";
+
+      if (!APPS_SCRIPT_URL || APPS_SCRIPT_URL.includes("AKfycbx...")) {
+        msg.innerText = "⚠️ Catatan: Masukkan URL Apps Script Anda di kode untuk menyimpan otomatis.";
         return;
       }
 
       const payload = {
-        nama: playerInfo.nama,
-        kelas: playerInfo.kelas,
+        nama: currentUser.nama,
+        kelas: currentUser.kelas,
         skor: skorAkhir,
-        detail: `Menyelesaikan ${MAX_SOAL} Soal`
+        detail: "Kuis Solo PAI SD"
       };
 
       fetch(APPS_SCRIPT_URL, {
         method: "POST",
         mode: "no-cors",
-        headers: {
-          "Content-Type": "application/json"
-        },
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload)
       })
       .then(() => {
-        statusDiv.innerText = "✅ Skor berhasil tercatat di Google Sheets Anda!";
+        msg.innerText = "✅ Skor berhasil tercatat di Google Sheets Anda!";
       })
       .catch((err) => {
-        console.error("Error:", err);
-        statusDiv.innerText = "❌ Gagal mengirim skor ke Google Drive.";
+        console.error(err);
+        msg.innerText = "❌ Gagal terhubung ke Google Apps Script.";
       });
+    }
+
+    function testGoogleSheetConnection() {
+      playSound("click");
+      if (!APPS_SCRIPT_URL || APPS_SCRIPT_URL.includes("AKfycbx...")) {
+        alert("Harap ganti APPS_SCRIPT_URL pada kode JS dengan URL Web App milikmu terlebih dahulu!");
+      } else {
+        alert("Menguji koneksi... Pengiriman tes skor 100 poin.");
+        sendScoreToGoogleDrive(100);
+      }
+    }
+
+    /* =====================================================================
+       8. CERTIFICATE GENERATOR (CANVAS TO IMAGE)
+       ===================================================================== */
+    function downloadCertificate() {
+      playSound("click");
+      const canvas = document.createElement("canvas");
+      canvas.width = 800;
+      canvas.height = 600;
+      const ctx = canvas.getContext("2d");
+
+      // Background
+      ctx.fillStyle = "#ffffff";
+      ctx.fillRect(0, 0, 800, 600);
+
+      // Border
+      ctx.strokeStyle = "#0F5132";
+      ctx.lineWidth = 15;
+      ctx.strokeRect(20, 20, 760, 560);
+
+      ctx.strokeStyle = "#FFC107";
+      ctx.lineWidth = 4;
+      ctx.strokeRect(35, 35, 730, 530);
+
+      // Text Title
+      ctx.fillStyle = "#0F5132";
+      ctx.font = "bold 32px Georgia";
+      ctx.textAlign = "center";
+      ctx.fillText("SERTIFIKAT PENGHARGAAN", 400, 100);
+
+      ctx.fillStyle = "#666666";
+      ctx.font = "18px Arial";
+      ctx.fillText("Diberikan kepada siswa berprestasi:", 400, 160);
+
+      // Student Name & Class
+      ctx.fillStyle = "#198754";
+      ctx.font = "bold 36px Arial";
+      ctx.fillText(currentUser.nama || "Siswa Teladan", 400, 230);
+
+      ctx.fillStyle = "#333333";
+      ctx.font = "20px Arial";
+      ctx.fillText(`Kelas / Sekolah: ${currentUser.kelas || "SD "}`, 400, 280);
+
+      // Score
+      ctx.fillStyle = "#000000";
+      ctx.font = "18px Arial";
+      ctx.fillText(`Atas keberhasilannya menyelesaikan Kuis Agama Islam dengan Skor:`, 400, 350);
+
+      ctx.fillStyle = "#D97706";
+      ctx.font = "bold 50px Arial";
+      ctx.fillText(`${soloScore} Poin`, 400, 420);
+
+      // Date & Footer
+      ctx.fillStyle = "#888888";
+      ctx.font = "14px Arial";
+      ctx.fillText(`Diterbitkan secara otomatis pada: ${new Date().toLocaleDateString('id-ID')}`, 400, 520);
+
+      // Download Trigger
+      const imageURL = canvas.toDataURL("image/png");
+      const link = document.createElement("a");
+      link.href = imageURL;
+      link.download = `Sertifikat_${currentUser.nama || 'Siswa'}.png`;
+      link.click();
+    }
+
+    /* =====================================================================
+       9. HELPER FUNCTIONS
+       ===================================================================== */
+    function hideAllViews() {
+      document.getElementById("view-menu").classList.add("hidden");
+      document.getElementById("view-solo").classList.add("hidden");
+      document.getElementById("view-battle").classList.add("hidden");
+      document.getElementById("view-result").classList.add("hidden");
+    }
+
+    function returnToMenu() {
+      playSound("click");
+      hideAllViews();
+      document.getElementById("view-menu").classList.remove("hidden");
     }
   </script>
 </body>
